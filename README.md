@@ -1,2 +1,3 @@
 # MANTA-Physics-Informed-Generalized-Underwater-Object-Tracking
-Official Repository of MANTA: Physics-Informed Generalized Underwater Object Tracking. Accpted in WACV 2026.
+This is the official repository for MANTA: Physics-Informed Generalized Underwater Object Tracking [WACV 2026].
+Code will be released here shortly.
