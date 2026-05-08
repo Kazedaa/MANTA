@@ -1,6 +1,5 @@
 # Download Pretrain Model Weights
-[Download](https://drive.google.com/file/d/1FP0wuYQX0t0of9gqDO_gyUiMK7UYXRG-/view?usp=sharing) the ZIP file and extract into `./PretrainedModels` <br><br>
+[Download](https://drive.google.com/file/d/1xcm3grSBikIwth7r3KhUtiTQ-riJ5Y97/view?usp=sharing) the ZIP file and extract into `./Models` <br><br>
 
-```DDPM_100.pth``` : DDPM trained on [UIEB](https://li-chongyi.github.io/proj_benchmark.html) for 100 epochs.<br>
-```UIEB_pretrain_150.pth``` : Trained on [UIEB](https://li-chongyi.github.io/proj_benchmark.html) for 150 epochs.<br>
-```UnDIVE_100.pth``` : Resumed UIEB_pretrain_150 for more epochs with temporal consistancy loss on [UVE-38k](https://github.com/TrentQiQ/UVE-38K).<br>
+```detector.pth``` : RFDetr-Medium Pretrained on Underwater Scenes.<br>
+```physics_emb.pth``` : A ResNet embedder trained with underwater physics augmentations for ReID <br>
