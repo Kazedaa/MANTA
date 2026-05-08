@@ -3,10 +3,10 @@ from rfdetr import RFDETRBase, RFDETRMedium
 model = RFDETRMedium(pretrained=True)
 
 model.train(
-    dataset_dir='../uzeta_sot_benchmark/',
-    train_ann_file='../uzeta_sot_benchmark/train/_annotations.coco.json',
-    val_ann_file='../uzeta_sot_benchmark/valid/_annotations.coco.json',
-    output_dir='rfdetr_experiments_12',
+    dataset_dir='', # NOTE: Path to dataset
+    train_ann_file='', # NOTE: Training Annotations
+    val_ann_file='',# NOTE: Validation Annotations
+    output_dir='rfdetr_finetune',
     epochs=150,                
     batch_size=32,            
     lr=1e-4,                  
@@ -23,6 +23,6 @@ model.train(
     early_stopping_patience=15,
     early_stopping_min_delta=0.001,
     warmup_epochs=5,
-    resume='rfdetr_experiments_12/checkpoint0009.pth'
+    # resume='model weights'
 )
 

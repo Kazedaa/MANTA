@@ -10,6 +10,7 @@ from PIL import Image
 import math
 from argparse import ArgumentParser
 import warnings
+import cv2
 
 # --- Suppress common warnings ---
 warnings.filterwarnings("ignore")
@@ -419,11 +420,52 @@ def main(args):
 
     output_dir = os.path.join("results", args.experiment_name)
     os.makedirs(output_dir, exist_ok=True)
+    if args.draw:
+        output_video_dir = os.path.join("results", f"{args.experiment_name}_draw")
+        os.makedirs(output_video_dir, exist_ok=True)
+
     for sequence, preds in all_sot_preds.items():
         with open(os.path.join(output_dir, f"{sequence}.txt"), "w") as f:
             for pred_bbox in preds:
                 x1, y1, x2, y2 = pred_bbox; w, h = x2 - x1, y2 - y1
                 f.write(f"{int(x1)}\t{int(y1)}\t{int(w)}\t{int(h)}\n")
+        
+        if args.draw:
+            output_video_path = os.path.join(output_video_dir, f"{sequence}.avi")
+            img_folder = os.path.join(args.dataset_path, sequence, "img")
+            img_list = sorted(os.listdir(img_folder), key=lambda x: int(x.split('.')[0]))
+            
+            first_img = cv2.imread(os.path.join(img_folder, img_list[0]))
+            height, width, _ = first_img.shape
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
+            out = cv2.VideoWriter(output_video_path, fourcc, 30.0, (width, height))
+            
+            gt_path = os.path.join(args.dataset_path, sequence, "groundtruth_rect.txt")
+            try:
+                gt = np.loadtxt(gt_path, delimiter='\t')
+            except ValueError:
+                gt = np.loadtxt(gt_path, delimiter=',')
+                
+            for i, image_name in enumerate(img_list):
+                img_path = os.path.join(img_folder, image_name)
+                frame = cv2.imread(img_path)
+
+                # Draw prediction
+                if i < len(preds) and preds[i] is not None:
+                    x1, y1, x2, y2 = [int(v) for v in preds[i]]
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2) # Red for Prediction
+                    cv2.putText(frame, 'PRED', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+                # Draw ground truth
+                if i < len(gt):
+                    x, y, w, h = [int(v) for v in gt[i]]
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2) # Green for Ground Truth
+                    cv2.putText(frame, 'GT', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                
+                out.write(frame)
+            out.release()
+            print(f"  -> Visualization saved to {output_video_path}")
+
     print(f"Final SOT results have been saved to: '{output_dir}'")
 
 if __name__ == "__main__":
@@ -432,5 +474,6 @@ if __name__ == "__main__":
     parser.add_argument("--detector", type=str, required=True, help="Path to the detection model weights (.pth).")
     parser.add_argument("--physics_emb", type=str, required=True, help="Path to the physics tracker model weights (.pth).")
     parser.add_argument("--experiment_name", type=str, required=True, help="Name for the experiment, used as the output folder name.")
+    parser.add_argument("--draw", action="store_true", help="Generate and save visualization videos")
     args = parser.parse_args()
     main(args)
